@@ -1,0 +1,37 @@
+#! /bin/sh
+
+#ce script permet de terminer un processus dont le PID est passé en paramètres.
+
+if [ $# -ne 1 ] #on teste le nombre de paramètres
+then
+	echo "Erreur de paramètre(s) -- usage: interrupt <pid>"
+	exit 1
+else
+	PID=$1
+	case "$PID" in
+
+		*[!0-9]*) echo "$PID n'est pas une valeur numérique valable! Veuillez reessayer." #on teste si le paramètre est bien un nombre valable ou pas
+		 exit 1;;
+
+		*) kill -1 $PID # si oui, on essaie de terminer le processus en lui envoyant un signal HUP (Hang-Up)
+			if [ $? -ne 0 ]
+			then
+				kill -2 $PID #s'il ne réagit pas on lui envoie un signal INT
+			if [ $? -ne 0 ]
+			then
+				echo " processus arrêté "
+				kill -9 $PID #si le processus n'a pas été terminé précédamment on lui envoie en signal KILL pour le terminer
+			else
+				echo " processus arrêté "
+				exit 0
+			fi
+			else
+			echo " processus arrêté "
+			exit 1
+			fi;;
+	esac
+fi
+echo "\n"
+exit 0
+
+

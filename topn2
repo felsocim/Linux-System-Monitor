@@ -1,0 +1,78 @@
+#! /bin/sh
+
+for i in `ls -l /proc | tr -s [:space:] |cut -d " " -f9 | tr -d [:alpha:] | tr -d [:punct:] | grep '^[0-9]'` #ici on recupère les noms de répertoires dans '/proc' qui sont constitués que des chiffres et donc correspondent aux PIDs des processus du système
+do
+
+	freq=`getconf CLK_TCK` #on recupère la valeur de fréquence de l'horloge (généralement égale à 100)
+
+	#dans le dossier de chaque processus on recupère, à l'aide d'une boucle for, les données demandées (utime et stime pour le temps de processus utilisé, la priorité, vsize et le temps écoulé depuis le démarrage du système jusqu'à le lancement du processus)	
+	utime=`cat /proc/$i/stat |cut -d " " -f14`
+	stime=`cat /proc/$i/stat |cut -d " " -f15`
+	prio=`cat /proc/$i/stat |cut -d " " -f18`
+	vsize=`cat /proc/$i/stat |cut -d " " -f23`
+	start=`cat /proc/$i/stat |cut -d " " -f22`
+
+	#ici on regroupe les données et on les convertit si nécessaire
+	total=`expr $utime + $stime`
+	totalc=`expr $total / $freq`
+	vsizec=`expr $vsize / 1048576`
+	startc=`expr $start / $freq`
+	
+	#on recupère la date du jour donnée par donnée dans les variables
+	tday=`date | tr -s [:space:] " " | cut -d " " -f3`
+	tmonth=`date --rfc-3339=date | cut -d "-" -f2`
+	tyear=`date | tr -s [:space:] " " | cut -d " " -f6`
+	thour=`date | tr -s [:space:] " " | cut -d " " -f4 | cut -d ":" -f1`
+	tminute=`date | tr -s [:space:] " " | cut -d " " -f4 | cut -d ":" -f2`
+	tsecond=`date | tr -s [:space:] " " | cut -d " " -f4 | cut -d ":" -f3`
+
+	#on convertit l'heure du moment en secondes
+	today=`expr \( $thour \* 3600 \) + \( $tminute \* 60 \) + $tsecond`
+
+	#on calcule le temps écoulé depuis le lancement du processus i
+	startp=`expr $today - $startc`
+
+	#on calcule le jour de lancement du processus i en soustrayant le temps écoulé depuis son lacement à l'heure du moment
+	startd=`expr $tday - \( $startp / 86400 \)`
+	starth=`expr \( $startp % 86400 \) / 3600`
+	startm=`expr \( $startp % 3600 \) / 60`
+
+	if [ $startm -lt 10 ] #on teste si la valeur indiquant la minute est plus petite que 10
+	then
+		startm="0"$startm #si oui, on la fait précéder par un 0 pour bien aligner les résultats
+		if [ $prio != "" ] #on teste sur au moins une donnée si le processus existe toujours avant de l'ajouter dans la liste
+		then
+			echo "$totalc s;$prio;$vsizec Mo;$startd/$tmonth/$tyear;$starth:$startm;$i;$startp" >> /tmp/testperf #la liste est sauvegardée dans un fichier temporaire
+		fi
+	else
+		if [ $prio != "" ]
+		then
+			echo "$totalc s;$prio;$vsizec Mo;$startd/$tmonth/$tyear;$starth:$startm;$i;$startp" >> /tmp/testperf
+		fi
+	fi
+
+done
+	
+case "$srt" in #on examine le choix de l'utilisateur concernant le tri de la liste des processus
+	
+	cpu) sort -nr -t ";" -k 1,1 /tmp/testperf > /tmp/perfsorted;; #la liste triée est dans tous les cas sauvegardée dans un fichier temporaire
+	prio) sort -nr -t ";" -k 2,2 /tmp/testperf > /tmp/perfsorted;;
+	vsize) sort -nr -t ";" -k 3,3 /tmp/testperf > /tmp/perfsorted;;
+	date) sort -nr -t ";" -k 4,4 /tmp/testperf > /tmp/perfsorted;;
+	tps) sort -n -t ";" -k 7,7 /tmp/testperf > /tmp/perfsorted;;
+	*) echo "$srt n'est pas un indicateur valable! \n Indicateurs valables: \n cpu | tri par temps CPU \n prio | tri par priorité \n vsize | tri par taille de mémoire virtuelle allouée \n date | tri par date de lancement \n tps | tri par temps écoulé depuis le lancement \n Veuillez reessayer."
+	   exit 1;;
+esac
+
+
+cat /tmp/perfsorted | grep -v '^[;]' | head -n $lng > /tmp/perfout #la liste finale qui va s'afficher va être taillée d'après la demande de l'utilisateur 
+
+echo "CPU	PRIO	VSIZE	START DATE	STIME	PID"
+cat /tmp/perfout | cut -d ";" -f1-6 | sed 's/;/\t/g' 2> /dev/null #on affiche la liste finale sur la sortie standard en définissant la tabulation comme séparateur de colonnes pour une meilleure mise en forme
+
+#on supprime les fichiers temporaires utilisés
+rm /tmp/testperf 2> /dev/null
+rm /tmp/perfsorted 2> /dev/null
+rm /tmp/perfout 2> /dev/null
+echo "\n"
+

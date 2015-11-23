@@ -1,0 +1,44 @@
+#! /bin/sh
+
+#ce script permet de changer la priorité d'un processus dont le PID est passé en paramètres avec la nouvelle valeur de sa priorité
+
+if [ $# -ne 2 ] #on teste le nombre valable de paramètres
+then
+	echo "Erreur de paramètre(s) -- usage: priority <nouvelle_valeur_de_priorite> <pid>"
+	exit 1
+else
+	PID=$2
+	if [ "$(echo $PID | grep "^[ [:digit:] ]*$")" ] #on teste si le paramètre PID est bien un nombre valable
+	then :
+	else
+		echo "$PID n'est pas une valeur valide de PID d'un processus! Veuillez reessayer." >&2
+		exit 1
+	fi
+
+	prio=$1 
+	if [ "$(echo $prio | grep "^[ [:digit:] ]*$")" ] #on teste si le paramètre PRIORITE est bien un nombre valable
+	then :
+	else
+		echo "$prio n'est pas une valeur valide de priorité d'un processus! Veuillez reessayer." >&2
+		exit 1
+	fi
+
+	if [ $prio -lt 0 ] && [ $prio -gt 20 ] #on teste si la nouvelle valeur de priorité se situe bien entre les valeurs autorisées 0 et 20
+	then
+		echo "La valeur de priorité doit être entre 0 et 20 !" >&2
+		exit 1
+	fi
+
+	renice +$prio $PID #on modifie la priorité du processus demandé
+	
+	if [ $? -eq 0 ] #finalement, on teste si le changement s'est bien passé
+	then
+		echo " la priorité a bien été modifiée "
+		exit 0
+	else 
+		echo "Une erreur est survenue lors de l'exécution. Veuillez reessayer." >&2
+		exit 1
+	fi
+echo "\n"
+fi
+

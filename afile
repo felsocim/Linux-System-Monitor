@@ -1,0 +1,38 @@
+#!/bin/sh
+
+#si on n'indique pas de paramètres à la commande 'afile' elle affiche par défaut la liste des 5 premiers fichier(s)/répertoire(s) les plus grands du ràpertoire courant
+
+if [ $# -eq 0 ] 
+then
+	n=5
+
+elif [ $# -ne 2 ]
+then
+	echo "Erreur de paramètre(s) -- usage: afile <chemin absolu> <longueur_de_la_liste_n>"
+	exit 1
+else #s'il y a deux paramètres (chemin absolu d'un répertoire et la longueur de la liste n), le script modifiera les résultats comme l'utilisateur le voudra
+	rep=$1
+	n=$2
+fi
+
+if [ -d $rep ] && [ $n -gt 0 ] #ici on teste si les deux paramètres indiqués sont convenables
+then
+	i=1
+	
+	echo "SIZE	FILE OR DIRECTORY"
+	while [ $i -le `ls -l $rep |tr -s [:space:] | cut -d " " -f 5,9 | sort -rn | head -n $n | wc -l` ]
+	do
+		echo `ls -l $rep |tr -s [:space:] | cut -d " " -f 5,9 | sort -rn | sed -n "$i"p` #dans la boucle les informations sur les fichiers seront triées et mises en forme d'une liste de deux colonnes
+		i=`expr $i + 1`
+	done
+elif [ $n -le 0 ] #le code suivant traite les cas d'erreur éventuels de la part de l'utilisateur
+then
+	echo "$n : n'est pas un entier valable. ( usage: afile <chemin_absolu> <n> où n est plus grand que 0 ) ! Veuillez reessayer."
+	exit 1
+elif ! [ -d $rep ]
+then
+	echo "$rep : n'est pas un répertoire ! Veuillez reessayer."
+	exit 1
+fi
+echo "\n"
+exit 0

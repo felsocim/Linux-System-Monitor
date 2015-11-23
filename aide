@@ -1,0 +1,18 @@
+#! /bin/sh
+
+#le script 'help' est une liste des commandes que l'on peut demander au script général d'effectuer en appelant les scripts auxiliaires. Les paramètres éventuelles et la syntaxe des commandes sont également expliqués ici.
+
+echo "COMMENT SE SERVIR DE CE SCRIPT \n"
+
+echo "Liste des commandes disponibles: \n"
+
+echo "'topn' --affiche les premiers n processus les plus consommateurs du système, critère du tri au choix ( usage: topn <n> <critere> ) \n
+Indicateurs valables: \n cpu | tri par temps CPU \n prio | tri par priorité \n vsize | tri par taille de mémoire virtuelle allouée \n date | tri par date de lancement \n tps | tri par temps écoulé depuis le lancement \n
+'afile' --effectue l'analyse des n premiers fichiers triés par taille et des répertoires d'un emplacement donné ( usage: afile <chemin_absolu> <n> ) \n
+'interrupt' --tue le processus dont le PID est passé en paramètre ( usage: interrupt <pid> ) \n
+'priority' --change la priorité du processus dont le PID est passé en paramètres ( usage: priority <nouvelle_valeur_de_priorite> <pid> ) \n
+'help' --affiche ce document ( ne prends pas de paramètres ) \n
+'exit' --termine le script ( ne prends pas de paramètres ) \n"
+
+exit 0
+      
