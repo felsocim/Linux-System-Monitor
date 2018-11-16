@@ -1,0 +1,40 @@
+#! /bin/sh
+
+#ce script est un script intermédiaire qui sert à appeler le script 'topn2' qui effectue la commande 'topn' qui affiche la liste des processus du système triés d'après le critère que l'utilisateur est libre de choisir en l'indiquant en paramètres ainsi que la longueur de la liste des processus demandée
+
+echo "VEUILLEZ PATIENTER... (cela peut prendre quelques secondes)"
+
+if [ $# -eq 0 ] #si aucun paramètre n'est indiqué, le script affiche par défaut les 5 premiers processus trié par le temps CPU utilisé depuis leur lancement dans l'ordre décroissant
+then 
+	lng=5
+	srt="cpu"
+	export lng
+	export srt
+	./topn2 2> /dev/null
+
+elif [ $# -ne 2 ] #ici on teste la validité des paramètres une fois qu'ils ont été fournis 
+then
+	echo "Erreur de paramètre(s) -- usage: topn <nombre de processus à afficher> <critère de tri>"
+	exit 1
+else
+	lng=$1
+	srt=$2 #on recupère les valeurs passés en paramètres dans des variables que l'on exportera pour qu'elles soient reconnaissables par le script 'topn2'
+	case "$lng" in
+
+		*[!0-9]*) echo "$lng n'est pas une valeur numérique valable! Veuillez reessayer." # on teste si la valeur de n est bien une valeur numérique
+ 		  exit 1;; 
+
+		*) export lng #si oui, on exporte les variables nécessaires et on appelle le scripte 'topn2'
+                   export srt
+		   ./topn2 2> /dev/null;;
+	esac
+fi
+
+
+
+
+
+ 
+
+
+	
