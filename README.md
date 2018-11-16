@@ -1,6 +1,6 @@
 # Moniteur système Linux
 
-## A propos
+## À propos
 
 Cet ensemble de scripts Shell est le résultat d'un projet réalisé dans le cadre des cours de pratique de systèmes d'exploitation. Le script principal **lsmon** permet d'afficher des informations de base sur le système Linux cible telles que la version du noyau, le temps depuis le dernier démarrage ou encore le taux d'utilisation de la mémoire vive. Une fois l'affichage de ces informations terminé, le script passe dans le mode interactif et permet à l'utilisateur de se servir des scripts auxiliers afin d'obtenir des renseignements plus précis notamment sur l'utilisation des ressources systèmes et le système. L'utilisateur est aussi en mesure d'interrompre un processus ou de lui attribuer une priorité différente.
 
@@ -14,7 +14,7 @@ Si le script ne dispose pas de droit d'exécution, utilisez la syntaxe ci-dessou
 
 `sh ./lsmon`
 
-Au démarrage, le script affiche un certain nombre d'informations sur le système, puis entre en mode d'interaction avec l'utilisateur. A partir de cet environnement, l'utilisateur peut se servir de plusieurs commandes.
+Au démarrage, le script affiche un certain nombre d'informations sur le système, puis entre en mode d'interaction avec l'utilisateur. À partir de cet environnement, l'utilisateur peut se servir de plusieurs commandes.
 
 ### topn
 
@@ -23,11 +23,11 @@ Affiche la liste des *n* premiers processus du système triés par le *critère*
 **SYNTAXE** : `topn <n> <critère>`
 
 *Critères valables* :
-* cpu (tri par le temps CPU utilisé par le processus)
-* prio (tri par priorité)
-* vsize (tri par la taille de mémoire virtuelle allouée)
-* date (tri par date de lancement)
-* tps (tri par temps ecoulé depuis lancement de processus)
+* `cpu` (tri par le temps CPU utilisé par le processus)
+* `prio` (tri par priorité)
+* `vsize` (tri par la taille de mémoire virtuelle allouée)
+* `date` (tri par date de lancement)
+* `tps` (tri par temps ecoulé depuis lancement de processus)
 
 ### afile
 
@@ -57,7 +57,7 @@ Termine le script.
 
 ## Auteurs
 
-* [**Marek Felsoci**](mailto:marek.felsoci@etu.unistra.fr) - [Université de Strasbourg](unistra.fr)
+* [**Marek Felsoci**](mailto:marek.felsoci@etu.unistra.fr) - [Cursus Master en Ingénierie : Informatique, systèmes et réseaux](http://cmi-informatique.unistra.fr/reseaux/) - [Université de Strasbourg](http://unistra.fr)
 * **Arnaud Pinsun**
 
 ## Licence
