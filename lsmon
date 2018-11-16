@@ -6,17 +6,12 @@
 
 #on s'assure que les scripts soient exécutables
 
-chmod 700 afile
-chmod 700 aide
-chmod 700 interrupt
-chmod 700 topn
-chmod 700 topn2
-chmod 700 priority
-
-#pour pouvoir lancer prochainement les fonctions auxiliaires il faut ajouter l'emplacement des scripts à la liste des emplacement générale (là ou le Shell va chercher les commandes)
-currentdir=`pwd`
-
-PATH=$PATH:$currentdir >> $HOME/.bashrc
+chmod +x ./scripts/afile
+chmod +x ./scripts/aide
+chmod +x ./scripts/interrupt
+chmod +x ./scripts/topn
+chmod +x ./scripts/topn2
+chmod +x ./scripts/priority
 
 #on affiche les infos clssiques sur le système courant
 
@@ -62,8 +57,8 @@ sum_final_idle=0
 #ici on recupère les informations sur la RAM utilisée
 memmax=`cat /proc/meminfo | head -n 1 | tr -s [:space:] | cut -d " " -f2`
 memmin=`cat /proc/meminfo | head -n 2 | tr -s [:space:] | cut -d " " -f2 | tail -n 1`
-cachemem=`cat /proc/meminfo | head -n 4 | tr -s [:space:] | cut -d " " -f2 | tail -n 1`
-buffer=`cat /proc/meminfo | head -n 3 | tr -s [:space:] | cut -d " " -f2 | tail -n 1`
+cachemem=`cat /proc/meminfo | head -n 5 | tr -s [:space:] | cut -d " " -f2 | tail -n 1`
+buffer=`cat /proc/meminfo | head -n 4 | tr -s [:space:] | cut -d " " -f2 | tail -n 1`
 
 #on calcule le taux de RAM utilisée en moyenne par toutes les applications lancées au moment même du lancement de ce script
 usedmem=`expr $memmax - $memmin - $cachemem - $buffer`
@@ -104,6 +99,9 @@ echo "   Pourcentage moyenne de CPU non utilisé depuis le dernier démarrage: $
 
 echo "\n"
 
+#Déplacement dans le dossier des scripts
+cd ./scripts
+
 echo "Processus: liste des 5 premiers processus les plus consommateurs"
 
 ./topn 2> /dev/null
@@ -124,8 +122,16 @@ xxx=1
 while [ $xxx -gt 0 ]
 do
 	read launch #cette variable recupère la saisie de l'utilisateur et l'exécute par la suite
-	
-	$launch
+
+  if [ $launch = "exit" ]
+  then
+    exit 0;
+  fi
+
+	./$launch
 
 	xxx=`expr $xxx + 1`
 done
+
+#Retour dans le répertoire de lancement
+cd ..
